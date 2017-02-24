@@ -43,15 +43,19 @@
 </head>
 
 <body>
-    <div class="app">
+    <!--<div class="app">
         <h1>PhoneGap</h1>
         <div id="deviceready" class="blink">
             <p class="event listening">Connecting to Device</p>
             <p class="event received">Device is Ready</p>
         </div>
+    </div>-->
+    <div>
+        <button onclick="openCalendar()">open calendar</button><br/><br/>
     </div>
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript" src="/plugins/cordova-plugin-calendar/www/Calendar.js"></script>
     <script type="text/javascript">
         app.initialize();
     </script>

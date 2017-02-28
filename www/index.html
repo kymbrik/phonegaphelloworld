@@ -1,25 +1,42 @@
 <!DOCTYPE html>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
 <html>
 <head>
-    <meta charset="utf-8"/>
-    <meta name="format-detection" content="telephone=no"/>
-    <meta name="msapplication-tap-highlight" content="no"/>
-    <meta name="viewport"
-          content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width"/>
+    <!--
+    Customize this policy to fit your own app's needs. For more guidance, see:
+        https://github.com/apache/cordova-plugin-whitelist/blob/master/README.md#content-security-policy
+    Some notes:
+        * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
+        * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
+        * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
+            * Enable inline JS: add 'unsafe-inline' to default-src
+    -->
 
-    <link rel="stylesheet" type="text/css" href="css/index.css"/>
+
+    <link rel="stylesheet" type="text/css" href="css/index.css">
     <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
 
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
-    <script type="text/javascript" src="cordova.js"></script>
-    <script type="text/javascript" src="js/index.js"></script>
-    <script type="text/javascript">
-        app.initialize();
-    </script>
     <title>Hello World</title>
 </head>
-
 <body>
 <div data-role="page" id="home">
     <div data-role="header">
@@ -40,69 +57,28 @@
         </p>
     </div>
 </div>
-
 <div data-role="page" id="add">
-    <div data-role="header">
-        <a target="_blank" href="#home" class="ui-btn ui-icon-home ui-btn-icon-left">Home</a>
-        <h1>Add Reminder</h1>
-    </div>
+  <div data-role="header">
+    <a target="_blank" href="#home" class="ui-btn ui-icon-home ui-btn-icon-left">Home</a>
+    <h1>Add Reminder</h1>
+  </div>
 
-    <div data-role="main" class="ui-content">
-        <p>
-            Enter title and message for the reminder:
-            <input type="text" id="title" placeholder="Title"/>
-            <input type="text" id="message" placeholder="Message"/>
-            Enter date and time to trigger reminder:
-            <input type="date" id="date"/>
-            <input type="time" id="time"/>
-            <a target="_blank" href="javascript:add_reminder()" style="text-decoration: none">
-                <button>Add</button>
-            </a>
-        </p>
-    </div>
+  <div data-role="main" class="ui-content">
+    <p>
+        Enter title and message for the reminder:
+        <input type="text" id="title" placeholder="Title" />
+        <input type="text" id="message" placeholder="Message" />
+        Enter date and time to trigger reminder:
+        <input type="date" id="date" />
+        <input type="time" id="time" />
+        <a target="_blank" href="javascript:add_reminder()" style="text-decoration: none"><button>Add</button></a>
+    </p>
+  </div>
 </div>
 
-<div data-role="page" id="all">
-    <div data-role="header">
-        <a target="_blank" href="#home" class="ui-btn ui-icon-home ui-btn-icon-left">Home</a>
-        <h1>All Reminders</h1>
-    </div>
-
-    <div data-role="main" class="ui-content">
-        <table data-role="table" data-mode="column" id="allTable" class="ui-responsive table-stroke">
-            <thead>
-            <tr>
-                <th>Title</th>
-                <th>Time</th>
-            </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<div data-role="page" id="pending">
-    <div data-role="header">
-        <a target="_blank" href="#home" class="ui-btn ui-icon-home ui-btn-icon-left">Home</a>
-        <h1>Pending</h1>
-    </div>
-
-    <div data-role="main" class="ui-content">
-        <table data-role="table" data-mode="column" id="pendingTable" class="ui-responsive table-stroke">
-            <thead>
-            <tr>
-                <th>Title</th>
-                <th>Time</th>
-            </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<script>
+<script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript" src="js/index.js"></script>
+<<script>
 
     var info = null;
 
@@ -114,40 +90,47 @@
 
         info = JSON.parse(localStorage.getItem("rp_data"));
     }, false);
+	
+	function add_reminder()
+{
+    var date = document.getElementById("date").value;
+    var time = document.getElementById("time").value;
+    var title = document.getElementById("title").value;
+    var message = document.getElementById("message").value;
 
-    function add_reminder() {
-        var date = document.getElementById("date").value;
-        var time = document.getElementById("time").value;
-        var title = document.getElementById("title").value;
-        var message = document.getElementById("message").value;
+    if(date == "" || time == "" || title == "" || message == "")
+    {
+      navigator.notification.alert("Please enter all details");
+      return;
+    }
 
-        if (date == "" || time == "" || title == "" || message == "") {
-            navigator.notification.alert("Please enter all details");
-            return;
-        }
+    var schedule_time = new Date((date + " " + time).replace(/-/g, "/")).getTime();
+    schedule_time = new Date(schedule_time);
 
-        var schedule_time = new Date((date + " " + time).replace(/-/g, "/")).getTime();
-        schedule_time = new Date(schedule_time);
+    var id = info.data.length;
 
-        var id = info.data.length;
-
-        cordova.plugins.notification.local.hasPermission(function (granted) {
-            if (granted == true) {
-                schedule(id, title, message, schedule_time);
+    cordova.plugins.notification.local.hasPermission(function(granted){
+      if(granted == true)
+      {
+        schedule(id, title, message, schedule_time);
+      }
+      else
+      {
+        cordova.plugins.notification.local.registerPermission(function(granted) {
+            if(granted == true)
+            {
+              schedule(id, title, message, schedule_time);
             }
-            else {
-                cordova.plugins.notification.local.registerPermission(function (granted) {
-                    if (granted == true) {
-                        schedule(id, title, message, schedule_time);
-                    }
-                    else {
-                        navigator.notification.alert("Reminder cannot be added because app doesn't have permission");
-                    }
-                });
+            else
+            {
+              navigator.notification.alert("Reminder cannot be added because app doesn't have permission");
             }
         });
-    }
-    function schedule(id, title, message, schedule_time) {
+      }
+    });
+}
+    function schedule(id, title, message, schedule_time)
+    {
         cordova.plugins.notification.local.schedule({
             id: id,
             title: title,
@@ -161,38 +144,6 @@
 
         navigator.notification.alert("Reminder added successfully")
     }
-
-    $(document).on("pagebeforeshow", "#all", function () {
-
-        var html = '';
-
-        for (var count = 0; count < info.data.length; count++) {
-            html = html + "<tr><td>" + info.data[count][1] + "</td><td>" + info.data[count][3] + "</td></tr>";
-
-        }
-
-        $("table#allTable tbody").empty();
-        $("table#allTable tbody").append(html).closest("table#allTable").table("refresh").trigger("create");
-    });
-
-    $(document).on("pagebeforeshow","#pending",function(){
-
-        var html = '';
-
-        for(var count = 0; count < info.data.length; count++)
-        {
-            var schedule_time = new Date(info.data[count][3]).getTime();
-            var current_time = new Date().getTime();
-
-            if(current_time < schedule_time)
-            {
-                html = html + "<tr><td>" + info.data[count][1] + "</td><td>" + info.data[count][3] + "</td></tr>";
-            }
-        }
-
-        $("table#pendingTable tbody").empty();
-        $("table#pendingTable tbody").append(html).closest("table#pendingTable").table("refresh").trigger("create");
-    });
 </script>
 </body>
 </html>
